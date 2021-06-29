@@ -7,8 +7,8 @@ from Bio.SeqFeature import SeqFeature
 import sys
 import datetime
 
-ribosomal_proteins = ['L14','L16','L18','L2','L22','L24','L3','L4','L5','L6','S10','S17','S19','S3','S8']
-ribo_dic = {'L14': 'rplN', 'L16': 'rplP', 'L18': 'rplR', 'L2': 'rplB', 'L22': 'rplV', 'L24': 'rplX', 'L3': 'rplC', 'L4': 'rplD', 'L5': 'rplE', 'L6': 'rplF', 'S10': 'rpsJ', 'S17': 'rpsQ', 'S19': 'rpsS', 'S3': 'rpsC', 'S8': 'rpsH'}
+ribosomal_proteins = ['L14','L16','L18','L2','L22','L24','L3','L4','L5','L6','S10','S17','S19','S3','S8','L15']
+ribo_dic = {'L14': 'rplN', 'L16': 'rplP', 'L18': 'rplR', 'L2': 'rplB', 'L22': 'rplV', 'L24': 'rplX', 'L3': 'rplC', 'L4': 'rplD', 'L5': 'rplE', 'L6': 'rplF', 'S10': 'rpsJ', 'S17': 'rpsQ', 'S19': 'rpsS', 'S3': 'rpsC', 'S8': 'rpsH', 'L15': 'rplO'}
 
 if sys.argv[1].endswith('.gz'):
     filehandle = sys.argv[1][:-3]

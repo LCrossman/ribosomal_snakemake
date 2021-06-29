@@ -17,8 +17,8 @@ outfile = open(inputfield+"_"+taxoncode+".fasta", 'w')
 
 for line in inp:
     if line.startswith('>'):
-        details = line.rstrip().split()[1:]
-        id = "{}|{}".format(taxoncode, details[int(idfield)])
+        details = line.rstrip().split()
+        id = "{}|{}".format(taxoncode, details[int(idfield)][1:])
         outfile.write(">{}\n".format(id))
     else:
         outfile.write(line)

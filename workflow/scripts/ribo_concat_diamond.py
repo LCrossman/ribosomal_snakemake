@@ -12,7 +12,7 @@ def concatenate_diamond_matches(infile, ribo_names_field):
     d = collections.defaultdict(dict)
     records = list(SeqIO.parse(handle, "fasta"))
 
-    ribosomal_proteins = ['rplN','rplP','rplR','rplB','rplV','rplX','rplC','rplD','rplE','rplF','rpsJ','rpsQ','rpsS','rpsC','rpsH']
+    ribosomal_proteins = ['rplN','rplP','rplR','rplB','rplV','rplX','rplC','rplD','rplE','rplF','rpsJ','rpsQ','rpsS','rpsC','rpsH','rplO']
 
 ##uncomment print statements for debugging, ID changes can cause concatenation to fail
 
@@ -53,9 +53,9 @@ def concatenate_diamond_matches(infile, ribo_names_field):
 
     outfile = open(outname, 'a+')
     for key, value in d.items():
-         #test we have all 15 sequences, otherwise mark genome for diamond blast searches or ignore
-         if len(value) == 15:
-              joinstring = "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}".format(''.join(d[key]['rplN']),''.join(d[key]['rplP']),''.join(d[key]['rplR']),''.join(d[key]['rplB']),''.join(d[key]['rplV']),''.join(d[key]['rplX']),''.join(d[key]['rplC']),''.join(d[key]['rplD']),''.join(d[key]['rplE']),''.join(d[key]['rplF']),''.join(d[key]['rpsJ']),''.join(d[key]['rpsQ']),''.join(d[key]['rpsS']),''.join(d[key]['rpsC']),''.join(d[key]['rpsH']))
+         #test we have all 16 sequences, otherwise mark genome for diamond blast searches or ignore
+         if len(value) == 16:
+              joinstring = "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}".format(''.join(d[key]['rplN']),''.join(d[key]['rplP']),''.join(d[key]['rplR']),''.join(d[key]['rplB']),''.join(d[key]['rplV']),''.join(d[key]['rplX']),''.join(d[key]['rplC']),''.join(d[key]['rplD']),''.join(d[key]['rplE']),''.join(d[key]['rplF']),''.join(d[key]['rpsJ']),''.join(d[key]['rpsQ']),''.join(d[key]['rpsS']),''.join(d[key]['rpsC']),''.join(d[key]['rpsH']),''.join(d[key]['rplO']))
               outfile.write(">{}\n".format(key))
               outfile.write(joinstring+"\n")
          else:

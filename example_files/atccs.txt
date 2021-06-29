@@ -13,4 +13,4 @@ atccS17.aa
 atccS19.aa
 atccS3.aa
 atccS8.aa
-atccs.txt
+atccL15.aa
