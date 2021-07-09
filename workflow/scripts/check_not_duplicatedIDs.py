@@ -11,7 +11,7 @@ def check_for_duplicates(infile):
 
     sequences = []
     outfile = open(sys.argv[1]+"dedupe.fasta", 'w')
-
+    final_strain_list = open("finalnames.txt", 'w')
     seen_before = []
 
     def checkers(element, list):
@@ -35,6 +35,8 @@ def check_for_duplicates(infile):
              seen_before.append(newid)
 
     SeqIO.write(sequences, outfile, "fasta")
+    for see in seen_before:
+        final_strain_list.write("{}\n".format(see))
 
 import sys
 check_for_duplicates(sys.argv[1])

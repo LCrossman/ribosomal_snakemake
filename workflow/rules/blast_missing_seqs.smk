@@ -7,9 +7,11 @@ rule diamond_db:
     shell:
          "diamond makedb --in {input.samp} --db {output}"
 
+
 rule diamond_run:
      input:
-         "strains_missing_ribos.txt"
+         miss="strains_missing_ribos.txt",
+	 comp="logs/conversion_complete.txt"
      output:
          "logs/blast_complete.txt"
      message: "executing diamond run with {threads} threads on the following files {input}"
@@ -39,8 +41,7 @@ rule collect_hits:
     output:
          DATESTRING['today']+"recovered.fasta"
     params:
-         protein_dna = config['protein_dna']['options'],
-         ribo_name_field = config['ribo_name_field']['options']
+         protein_dna = config['protein_dna']['options']
     log:
          log="logs/collect_hits.log"
     run:
@@ -48,7 +49,7 @@ rule collect_hits:
          if len(input.infiles) > 0:
              for inp in input.infiles:
                  print("input is", inp)
-                 shell(f"python collect_from_diamond_blast_nucleotide.py {inp} {params.protein_dna} {params.ribo_name_field}")
+                 shell(f"python workflow/scripts/collect_from_diamond_blast.py {inp} {params.protein_dna}")
          else:
              shell("touch {output}")
 
@@ -61,6 +62,6 @@ rule concatenate:
     log:
          log="logs/concatenate.log"
     params:
-         ribo_name_field = config['ribo_name_field']['options']
+         protein_dna = config['protein_dna']['options']
     shell:
-         "python ribo_concat_diamond.py {input.infile} {params.ribo_name_field}"
+         "python workflow/scripts/ribo_concat_diamond.py {input.infile} {params.protein_dna}"

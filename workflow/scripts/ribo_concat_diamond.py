@@ -1,32 +1,60 @@
 #!/usr/bin/python
 
-def concatenate_diamond_matches(infile, ribo_names_field):
+def collect_expected_seqlengths(inf_ribos, prot_dna):
+    from Bio import SeqIO
+    dicty = {}
+    lens = []
+    ribos = []
+    for inf in inf_ribos:
+        print("inf here", inf)
+        inf_handle = open(inf, 'r')
+        inf_rec = SeqIO.read(inf_handle, 'fasta')
+        inf_id_split = inf_rec.id.split('_')
+        inf_id = inf_id_split[1]
+        print("inf_id", inf_id, inf_id_split)
+        if prot_dna == 'protein':
+            seqlen = len(inf_rec.seq)
+        elif prot_dna == 'dna':
+            seqlen = 3*len(inf_rec.seq)
+        try:
+            dicty[inf_id].append(int(seqlen))
+        except:
+            dicty[inf_id] = int(seqlen)
+    print(dicty)
+    return dicty
+    
+
+def concatenate_diamond_matches(infile, prot_dna):
     import collections
     import datetime
     import os
     from Bio import SeqIO
 
     handle = open(infile, 'r')
-    ribo_names_field = ribo_names_field
+    inf_two = open('atccs.txt', 'r')
+    inf_ribos = [lin.rstrip() for lin in inf_two]
+    dicty = collect_expected_seqlengths(inf_ribos, prot_dna)
+    ribo_names_field = 1 #ribo_names_field
     print("ribo_names_field", ribo_names_field)
     d = collections.defaultdict(dict)
     records = list(SeqIO.parse(handle, "fasta"))
+    outf_strains = set()
 
     ribosomal_proteins = ['rplN','rplP','rplR','rplB','rplV','rplX','rplC','rplD','rplE','rplF','rpsJ','rpsQ','rpsS','rpsC','rpsH','rplO']
-
+    outfile_strains = open("strains_missing_ribos.txt", 'a+')
 ##uncomment print statements for debugging, ID changes can cause concatenation to fail
 
 #Loop through annotation and create a dictionary containing each ribosomal sequence per isolate genome
 
     for rec in records:
         id = rec.id.split('|')
-#        print("id to split on |", id)
+    #    print("id to split on |", id)
         shortid = id[0].split('_')
-#        print("shortid to split on _", shortid)
+    #    print("shortid to split on _", shortid)
         newid = id[1]
-#        print("newid", newid)
+     #   print("newid", newid)
         rib = shortid[int(ribo_names_field)]
-#        print("rib", rib)
+     #   print("rib", rib)
         seqy = str(rec.seq)
         if seqy.endswith('*'):
              #remove the stop character sometimes included in protein translation files
@@ -36,14 +64,21 @@ def concatenate_diamond_matches(infile, ribo_names_field):
         for ribo in ribosomal_proteins:
             if rib == ribo:
                 #check for exact match
-                try:
-                   d[newid][ribo].append(newseq)
-                except:
-                   d[newid][ribo] = [newseq]
-
+                if  len(newseq) - 10 < dicty[rib] < len(newseq) + 10:   
+                    try:
+                        d[newid][ribo].append(newseq)
+                    except:
+                        d[newid][ribo] = [newseq]
+                    #    print(d[newid][ribo])
+                        if len(d[newid][ribo]) > 1:
+                            print("duplicate annotation, will search with diamond blast", ribo, newid)
+                            del d[newid][ribo]
+                else:
+                    print("length is incorrect for {}".format(rib), len(newseq), dicty[rib])
+                    outf_strains.add("{}".format(newid))
+                   
     #create datestamp file
     outname = datetime.date.today().strftime("%d-%m-%y")+"concatenated_ribosomal_proteins_db.fasta"
-    outfile_strains = open("strains_missing_ribos.txt", 'a+')
     if os.path.exists(outname):
        #if files have been collected from the annotation and we are now collecting from diamond blast process
        outname = outname+"_2"
@@ -60,7 +95,9 @@ def concatenate_diamond_matches(infile, ribo_names_field):
               outfile.write(joinstring+"\n")
          else:
               print(key, "Missing some ribosomal proteins, will search with Diamond Blast", len(value))
-              outfile_strains.write("{}\n".format(key))
+              outf_strains.add("{}".format(key))
+    for stray in outf_strains:
+        outfile_strains.write('{}\n'.format(stray))
 
 import sys
 concatenate_diamond_matches(sys.argv[1], sys.argv[2])

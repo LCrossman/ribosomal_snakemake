@@ -16,11 +16,10 @@ for rec in records:
     for feature in rec.features:
         if feature.type == "CDS":
             if feature.location.strand == -1:
-                ffn = rec.seq[feature.location.start:feature.location.end]
-                ffn.r = ffn[::-1]
+                ffn = rec.seq[feature.location.start:feature.location.end].reverse_complement()
                 newid = ''.join(feature.qualifiers['locus_tag'])
                 newdescription = ''.join(feature.qualifiers['product'])
-                sequences.append(SeqRecord(ffn.r,id=newid,description=newdescription))
+                sequences.append(SeqRecord(ffn,id=newid,description=newdescription))
             elif feature.location.strand == 1:
                 ffn = rec.seq[feature.location.start:feature.location.end]
                 newid = ''.join(feature.qualifiers['locus_tag'])

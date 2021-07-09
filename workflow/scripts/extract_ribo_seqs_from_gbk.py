@@ -20,30 +20,51 @@ params = sys.argv[2]
 print("parameters for protein or dna are:", params)
 outname = datetime.date.today().strftime("%d-%m-%y")+"extracted.fasta"
 records = list(SeqIO.parse(handle, "genbank"))
-
+seen_before = []
 sequences = []
 
 #Loop through annotation to look for an annotation match
 #Save correct matches to file
+ribo_count = 0
 
 for rec in records:
     for feature in rec.features:
         if feature.type == "CDS":
             if 'ribosomal protein' in ''.join(feature.qualifiers['product']):
-                elements = ''.join(feature.qualifiers['product']).split()
-                for rib in ribosomal_proteins:
-                    if elements[-1] == rib:
-                        print("annotation match")
-                        if params.lower() == 'dna':
+                print(feature.qualifiers['locus_tag'], feature.qualifiers['product'])
+                print("ribo_count is", ribo_count, "seen_before", seen_before)
+                if ribo_count > 16:
+                    with open('strains_missing_ribos.txt', 'a') as f:
+                            print("breaking out")
+                            f.write("{}\n".format(filehandle))
+                    break
+                else:
+                    elements = ''.join(feature.qualifiers['product']).split()
+                    for rib in ribosomal_proteins:
+                        if elements[-1] == rib:
+                                ribo_count+=1
+                                if rib in seen_before:
+                                    with open('strains_missing_ribos.txt', 'a') as f:
+                                           print("breaking out as seen before")
+                                           f.write("{}\n".format(filehandle))
+                                           break
+                                seen_before.append(rib)
+#                          print("annotation match")
+                                if params.lower() == 'dna':
                             #DNA parameters so extract the DNA sequence and save to a file with the appropriate ID
-                            newrec = SeqRecord(feature.location.extract(rec.seq), id="{}_{}|{}".format(elements[-1], ribo_dic[elements[-1]], filehandle), description="")
-                            sequences.append(newrec)
-                        elif params.lower() == 'protein':
+                                    newrec = SeqRecord(feature.location.extract(rec.seq), id="{}_{}|{}".format(elements[-1], ribo_dic[elements[-1]], filehandle), description="")
+                                    print("length of the translate", len(feature.location.extract(rec.seq).translate(to_stop=True)), "seq length", len(feature.location.extract(rec.seq))//3)
+                                    if len(feature.location.extract(rec.seq).translate(to_stop=True)) < (len(feature.location.extract(rec.seq))//3)-1:
+                                         pass
+                                    else:
+                                         sequences.append(newrec)
+                                elif params.lower() == 'protein':
                             #protein parameters so extract the protein sequence, (by translating the DNA sequence) and save to file with appropriate ID
-                            newrec = SeqRecord(feature.location.extract(rec.seq).translate(), id="{}_{}|{}".format(ribo_dic[elements[-1]], elements[-1], filehandle), description="")
-                            sequences.append(newrec)
-                        else:
-                            print("unknown parameters for DNA or protein, please choose either dna or protein")
+                                     newrec = SeqRecord(feature.location.extract(rec.seq).translate(to_stop=True), id="{}_{}|{}".format(elements[-1], ribo_dic[elements[-1]], filehandle), description="")
+                                     print('>{}\n{}'.format(newrec.id, newrec.seq))
+                                     sequences.append(newrec)
+                                else:
+                                     print("unknown parameters for DNA or protein, please choose either dna or protein")
 
 outfile = open(outname, 'a+')
 #save chosen sequences to file with date stamp
