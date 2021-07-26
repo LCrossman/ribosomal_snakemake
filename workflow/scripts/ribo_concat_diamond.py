@@ -64,7 +64,7 @@ def concatenate_diamond_matches(infile, prot_dna):
         for ribo in ribosomal_proteins:
             if rib == ribo:
                 #check for exact match
-                if  len(newseq) - 10 < dicty[rib] < len(newseq) + 10:   
+                if  len(newseq) - 20 < dicty[rib] < len(newseq) + 20:   
                     try:
                         d[newid][ribo].append(newseq)
                     except:
