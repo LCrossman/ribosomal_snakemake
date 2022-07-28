@@ -1,5 +1,5 @@
 # ribosomal_snakemake
-
+*** <h1> COMPLETELY NEW VERSION REWRITE COMING SOON!!! ** MUCH faster </h1>
 # Ribosomal protein tree generation
 
 A workflow to generate ribosomal protein phylogenetic trees, using 15 ribosomal protein sequences.  Either protein or DNA sequences can be used to build the tree, it may be of benefit to use DNA sequences for more closely related genomes, and protein sequences for those that are more divergent.<br>
