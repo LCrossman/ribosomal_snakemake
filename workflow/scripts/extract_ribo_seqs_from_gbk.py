@@ -30,6 +30,7 @@ ribo_count = 0
 for rec in records:
     for feature in rec.features:
         if feature.type == "CDS":
+          try:
             if 'ribosomal protein' in ''.join(feature.qualifiers['product']):
                 print(feature.qualifiers['locus_tag'], feature.qualifiers['product'])
                 print("ribo_count is", ribo_count, "seen_before", seen_before)
@@ -65,7 +66,8 @@ for rec in records:
                                      sequences.append(newrec)
                                 else:
                                      print("unknown parameters for DNA or protein, please choose either dna or protein")
-
+          except:
+               print("problem {}".format(feature))
 outfile = open(outname, 'a+')
 #save chosen sequences to file with date stamp
 
