@@ -29,8 +29,12 @@ ribo_count = 0
 
 for rec in records:
     for feature in rec.features:
+<<<<<<< HEAD
         if feature.type == "CDS":
           try:
+=======
+        if feature.type == "CDS" and 'product' in feature.qualifiers.keys():
+>>>>>>> cde88a433158ce466cc32c1d7f6f62fcc63d620d
             if 'ribosomal protein' in ''.join(feature.qualifiers['product']):
                 print(feature.qualifiers['locus_tag'], feature.qualifiers['product'])
                 print("ribo_count is", ribo_count, "seen_before", seen_before)
