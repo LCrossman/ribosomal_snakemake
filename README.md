@@ -1,6 +1,6 @@
 # ribosomal_snakemake
-*** <h3> NEW VERSION AVAILABLE in RUST ** MUCH faster, relies on HMMER so only x86_64</h3>
-*** <h3> https://github.com/LCrossman/rustribo </h3>
+<h4> NEW VERSION AVAILABLE in RUST ** MUCH faster, relies on HMMER so only x86_64</h4>
+*** <h4> https://github.com/LCrossman/rustribo </h4>
 # Ribosomal protein tree generation
 
 A workflow to generate ribosomal protein phylogenetic trees, using 15 ribosomal protein sequences.  Either protein or DNA sequences can be used to build the tree, it may be of benefit to use DNA sequences for more closely related genomes, and protein sequences for those that are more divergent.<br>
