@@ -1,5 +1,5 @@
 # ribosomal_snakemake
-<h4> NEW VERSION AVAILABLE ** MUCH faster, relies on HMMER so only x86_64</h4>
+<h4> THIS IS A PYTHON SNAKEMAKE VERSION with BLAST ** </h4>
 <br>
 # Ribosomal protein tree generation - Python Snakemake version
 
