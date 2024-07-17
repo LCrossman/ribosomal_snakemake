@@ -33,6 +33,8 @@ rule all:
         extr="logs/extracted_complete.txt",
         subtest=DATESTRING['today']+"concatenated_ribosomal_proteins_db.fasta_2",
         dmnd="logs/blast_complete.txt",
+        trimm="logs/trimming.log",
+        tre="logs/create_tree.txt",
         report="report.html"
 
 
@@ -174,18 +176,30 @@ rule align:
      run:
          shell("(mafft --retree 3 --maxiterate 3 --thread {threads} {input} > {output}) 2>>log")
 
-rule create_tree:
+rule trim_alignment:
       input:
           DATESTRING['today']+".updateriboprotdedupe.aln"
       output:
-          DATESTRING['today']+".updateriboprotdedupe.aln.treefile"
+          DATESTRING['today']+".updateriboprotdedupe_trimmed.aln"
+      threads:
+          config['threads']
+      log:
+          log="logs/trimming.log"
+      run:
+          shell("(trimal -gt 0.2 -in {input} > {output})")          
+
+rule create_tree:
+      input:
+          DATESTRING['today']+".updateriboprotdedupe_trimmed.aln"
+      output:
+          DATESTRING['today']+".updateriboprotdedupe_trimmed.aln.log"
       params:
           tree_type = config['tree_type']['options'],
           protein_dna = config['protein_dna']['options']
       threads:
           config['threads']
       log:
-          "logs/create_tree.log"
+          "logs/create_tree.txt"
       run:
           if params.tree_type == 'iqtree':
                if params.protein_dna == 'dna':
@@ -197,7 +211,7 @@ rule create_tree:
 
 rule report:
       input:
-          DATESTRING['today']+".updateriboprotdedupe.aln.treefile"
+          DATESTRING['today']+".updateriboprotdedupe_trimmed.aln.log"
       output:
           "report.html"
       run:
