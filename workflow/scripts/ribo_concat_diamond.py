@@ -22,7 +22,6 @@ def collect_expected_seqlengths(inf_ribos, prot_dna):
             dicty[inf_id] = int(seqlen)
     print(dicty)
     return dicty
-    
 
 def concatenate_diamond_matches(infile, prot_dna):
     import collections
@@ -34,6 +33,14 @@ def concatenate_diamond_matches(infile, prot_dna):
     inf_two = open('atccs.txt', 'r')
     inf_ribos = [lin.rstrip() for lin in inf_two]
     dicty = collect_expected_seqlengths(inf_ribos, prot_dna)
+    if prot_dna == "protein":
+        #QC outlier cutoffs per protein calculated from rounded up differences of median lengths of all uniprot curated ribosomal proteins plus or minus 1.5 * IQR  
+        dict_differences = {'rplB':16, 'rplC':72, 'rplD': 20, 'rplE': 15, 'rplF': 10, 'rplN': 4, 'rplO': 26, 'rplP': 15, 'rplR': 8, 'rplV': 32, 'rplX': 33, 'rpsC': 71, 'rpsH': 4, 'rpsJ': 19, 'rpsQ': 11, 'rpsS': 17}
+    elif prot_dna == "dna":
+        nuc_dict = {k: v * 3 for k, v in dicty.items()}
+        dicty = nuc_dict
+    else:
+        print("problem with the input format")
     ribo_names_field = 1 #ribo_names_field
     print("ribo_names_field", ribo_names_field)
     d = collections.defaultdict(dict)
@@ -64,7 +71,7 @@ def concatenate_diamond_matches(infile, prot_dna):
         for ribo in ribosomal_proteins:
             if rib == ribo:
                 #check for exact match
-                if  len(newseq) - 20 < dicty[rib] < len(newseq) + 20:   
+                if  (len(newseq) - dict_differences[rib]) < dicty[rib] < (len(newseq) + dict_differences[rib]):   
                     try:
                         d[newid][ribo].append(newseq)
                     except:
